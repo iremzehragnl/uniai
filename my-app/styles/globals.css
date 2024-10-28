@@ -19,3 +19,28 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* styles.css */
+
+.button {
+  background-color: #238839; /* Daha canlı bir arka plan rengi */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px; /* Yuvarlatılmış köşeler */
+  font-size: 16px; /* Font boyutu */
+  font-weight: bold; /* Kalın yazı tipi */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Geçiş efekti */
+  cursor: pointer; /* İşaretçi gösterimi */
+}
+
+.button:hover {
+  background-color: #4CAF50; /* Hover rengi */
+  transform: translateY(-3px); /* Hover sırasında yukarı hareket */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Gölgelendirme efekti */
+}
+
+.button:active {
+  transform: translateY(0); /* Tıklandığında yukarı hareketi geri al */
+}
+
