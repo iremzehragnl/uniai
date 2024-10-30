@@ -1,21 +1,93 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link"; // Link bileşenini ekleyin
+import Link from "next/link";
 import Navbar from "../components/Navbar";
+import { GoogleGenerativeAI, HarmCategory,HarmBlockThreshold,} from "@google/generative-ai";
 
-import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} from "@google/generative-ai";
 
-const MODEL_NAME = "gemini-1.0-pro";
+const MODEL_NAME = "gemini-1.5-flash";
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
 
 export default function Home() {
   const [isChatOpen, setChatOpen] = useState(false);
   const [chatData, setChatData] = useState<string>("");
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [inputValue, setInputValue] = useState<string>("");
+  const [loadingData, setLoadingData] = useState<boolean>(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<string[]>([]);
 
+  const generateQuestions = async () => {
+    const prompt = "Yazılım ve teknoloji hakkında iki kısa soru oluştur. Soru dışında başka bir şey yazma. Sıralama yapma. Soruların başına sayı ekleme.";
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    const result = await model.generateContent([prompt]);
+    const questionsArray = result.response.text().split('\n').filter(q => q.trim() !== '');
+
+    setQuestions(questionsArray);
+  };
+
+  useEffect(() => {
+    generateQuestions();
+  }, []);
+
+ 
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageBase64(reader.result?.toString().split(",")[1] || null);
+      setUploadedFileName(file.name);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageRemove = () => {
+    setImageBase64(null);
+    setUploadedFileName(null);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const prompt = inputValue || "Bu görseli açıkla, ve not şeklinde çıkart. Başka hiçbir şey yazma.";
+    setLoadingData(true);
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    const contentData = imageBase64
+      ? [
+          prompt,
+          {
+            inlineData: {
+              data: imageBase64,
+              mimeType: "image/jpeg",
+            },
+          },
+        ]
+      : [prompt];
+
+    const result = await model.generateContent(contentData);
+    setChatData((prev) => `${prev}<br>${result.response.text()}`);
+    setLoadingData(false);
+  };
+
+  // Yeni fonksiyon: Sorulara tıklama olayı
+  const handleQuestionClick = async (question: string) => {
+    setInputValue(question);
+    setLoadingData(true);
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    const result = await model.generateContent([question]);
+    setChatData((prev) => `${prev}<br>${result.response.text()}`);
+    setLoadingData(false);
+  };
   const toggleChat = () => {
     setChatOpen(!isChatOpen);
   };
@@ -76,9 +148,12 @@ export default function Home() {
     runChat(prompt);
   };
 
+
+
   return (
     <div className="flex">
-      {/* Sol Navbar */}
+      <nav className="flex flex-col items-start bg-white border-r border-gray-300 h-screen p-4">
+             {/* Sol Navbar */}
       <nav className="flex flex-col items-start bg-white border-r border-gray-300 h-screen p-4">
         <div className="mb-8">
           <Image src="/images/logo.png" alt="Logo" width={120} height={40} />
@@ -111,9 +186,11 @@ export default function Home() {
         </ul>
       </nav>
 
+      </nav>
+
       <main className="flex-1 p-8">
-        {/* Arama Çubuğu */}
-        <div className="mb-8 text-center">
+          {/* Arama Çubuğu */}
+          <div className="mb-8 text-center">
           <input
             type="text"
             placeholder="Arama..."
@@ -187,38 +264,95 @@ export default function Home() {
             <button className="mt-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 font-bold">Kursa Git</button>
           </div>
         </div>
+
       </main>
 
-      {/* Chatbot İkonu */}
       <div
-        className="fixed bottom-8 right-8 bg-red-500 rounded-full p-6 cursor-pointer"
+        className="fixed bottom-8 right-8 bg-red-500 rounded-full p-6 cursor-pointer transition-transform transform hover:scale-110"
         onClick={toggleChat}
       >
-        <Image 
-          src="/images/chatbot-icon.png" 
+        <Image
+          src="/images/chatbot-icon.png"
           alt="Chatbot"
           width={30}
           height={30}
         />
       </div>
 
-      {/* Chatbot Sohbeti */}
       {isChatOpen && (
-        <div className="fixed bottom-16 right-4 bg-white border border-gray-300 shadow-lg p-4 rounded-lg">
-          <h2 className="font-bold mb-2">Sohbet Botu</h2>
-          <form onSubmit={onSubmit}>
+        <div className="fixed bottom-16 right-4 bg-white border border-gray-300 shadow-lg p-4 rounded-lg w-80 max-h-96 overflow-y-auto transition-all duration-300 transform translate-y-0 opacity-100">
+          <h2 className="font-bold text-lg mb-2 text-center">Sohbet Botu</h2>
+          <div className="border-b border-gray-300 pb-2 mb-2">
+            {questions.length > 0 && (
+              <div className="flex flex-col mb-2">
+                {questions.map((question, index) => (
+                  <p
+                    key={index}
+                    className="text-blue-600 cursor-pointer hover:underline mb-1"
+                    onClick={() => handleQuestionClick(question)}
+                  >
+                    {question}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+          <form onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Selam! Nasıl yardımcı olabilirim?"
               name="prompt"
-              className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+              className="border border-gray-300 rounded-lg p-2 w-full mb-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
             />
-            <button type="submit" className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full font-bold">
-              Gönder
-            </button>
+            <div className="flex items-center mb-2">
+              <input
+                type="file"
+                accept="image/*"
+                id="file-input"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              <label htmlFor="file-input" className="cursor-pointer">
+                <Image
+                  src="/images/attachment-icon.png"
+                  alt="Ataç"
+                  width={24}
+                  height={24}
+                  className="mr-2 hover:opacity-70 transition-opacity"
+                />
+              </label>
+              <button
+                type="submit"
+                className="bg-green-500 text-white p-2 rounded hover:bg-green-600 font-bold shadow transition-transform transform hover:scale-105"
+                style={{ width: '80px', height: '36px' }}
+              >
+                Gönder
+              </button>
+            </div>
+            {uploadedFileName && (
+              <div className="flex justify-between items-center mt-2">
+                <p className="text-gray-600">Yüklenen dosya: <span className="font-medium">{uploadedFileName}</span></p>
+                <button 
+                  type="button" 
+                  onClick={handleImageRemove} 
+                  className="text-red-500 hover:underline"
+                >
+                  Sil
+                </button>
+              </div>
+            )}
           </form>
           <div className="mt-4">
-            {chatData && <div dangerouslySetInnerHTML={{ __html: chatData }} />}
+            {loadingData && (
+              <div className="flex justify-center mb-2">
+                <span className="loader">Yükleniyor...</span>
+              </div>
+            )}
+            {chatData && (
+              <div className="mt-2" dangerouslySetInnerHTML={{ __html: chatData }} />
+            )}
           </div>
         </div>
       )}

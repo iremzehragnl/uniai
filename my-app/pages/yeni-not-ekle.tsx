@@ -17,10 +17,32 @@ export default function YeniNotEkle() {
     }
   };
 
-  const handleFileUpload = () => {
+  const handleFileUpload = async () => {
     if (selectedFile) {
-      // Burada dosya yükleme işlemi gerçekleştirilebilir
-      console.log("Yüklenen dosya:", selectedFile);
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        const response = await fetch("GEMINI_API_ENDPOINT", {
+          method: "POST",
+          headers: {
+            // Gerekli ise API anahtarını burada ekleyin
+            "Authorization": "Bearer YOUR_API_KEY",
+          },
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Dönüştürülen metin:", data.transcribedText);
+          // Burada döndürülen metni işleyebilirsiniz
+        } else {
+          alert("Dosya yükleme sırasında bir hata oluştu.");
+        }
+      } catch (error) {
+        console.error("Hata:", error);
+        alert("Bir hata oluştu.");
+      }
     } else {
       alert("Lütfen bir dosya seçin veya sürükleyip bırakın!");
     }
@@ -82,10 +104,10 @@ export default function YeniNotEkle() {
         {/* Başlık */}
         <h1 className="text-3xl font-bold text-center mb-4">DERS NOTLARINIZI DİJİTALLEŞTİRİN</h1>
         <p className="text-lg text-center mb-8 mx-8 md:mx-16">
-  Buraya ders notlarının fotoğraflarını yükleyebilirsiniz. Yüklediğiniz fotoğraflardaki notlar yapay zeka tarafından yazıya
-  dönüştürülecek ve size kolay erişim için bir dosyada toplanacaktır. Bu sayede, ders notlarınızı dijital ortamda hızlıca
-  düzenleyebilir ve saklayabilirsiniz.
-</p>
+          Buraya ders notlarının fotoğraflarını yükleyebilirsiniz. Yüklediğiniz fotoğraflardaki notlar yapay zeka tarafından yazıya
+          dönüştürülecek ve size kolay erişim için bir dosyada toplanacaktır. Bu sayede, ders notlarınızı dijital ortamda hızlıca
+          düzenleyebilir ve saklayabilirsiniz.
+        </p>
 
         {/* Dosya Yükleme Kutusu */}
         <div 
