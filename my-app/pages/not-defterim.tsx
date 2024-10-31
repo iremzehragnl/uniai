@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Image from "next/image";
-import Navbar from "../components/Navbar";
 import { useRouter } from "next/router"; // Yönlendirme için useRouter
 import Link from "next/link";
 
@@ -21,32 +20,40 @@ export default function NotDefterim() {
       {/* Sol Navbar */}
       <nav className="flex flex-col items-start bg-white border-r border-gray-300 h-screen p-4">
         <div className="mb-8">
-          <Image src="/images/logo.png" alt="Logo" width={120} height={40} />
+          <Link href="/" passHref>
+            <Image src="/images/logo.png" alt="Logo" width={120} height={40} />
+          </Link>
         </div>
         <ul className="space-y-4 text-lg font-normal">
           <li className="cursor-pointer transition-colors duration-300 hover:text-green-500">
-            <a href="/" className="flex items-center">
-              <Image src="/images/gozat-icon.png" alt="Göz At" width={20} height={20} className="mr-2" />
-              Göz At
-            </a>
+            <Link href="/">
+              <div className="flex items-center">
+                <Image src="/images/gozat-icon.png" alt="Göz At" width={20} height={20} className="mr-2" />
+                Göz At
+              </div>
+            </Link>
           </li>
           <li className="cursor-pointer transition-colors duration-300 hover:text-green-500">
-            <a href="/kurslarim" className="flex items-center">
-              <Image src="/images/course-icon.png" alt="Kurslarım" width={20} height={20} className="mr-2" />
-              Kurslarım
-            </a>
+            <Link href="/kurslarim">
+              <div className="flex items-center">
+                <Image src="/images/course-icon.png" alt="Kurslarım" width={20} height={20} className="mr-2" />
+                Kurslarım
+              </div>
+            </Link>
           </li>
           <li className="cursor-pointer transition-colors duration-300 hover:text-green-500 text-green-500">
-            <a href="#" className="flex items-center">
-              <Image src="/images/notebook-icon.png" alt="Not Defterim" width={20} height={20} className="mr-2" />
-              Not Defterim
-            </a>
+            <Link href="/not-defterim">
+              <div className="flex items-center">
+                <Image src="/images/notebook-icon.png" alt="Not Defterim" width={20} height={20} className="mr-2" />
+                Not Defterim
+              </div>
+            </Link>
           </li>
           <li className="cursor-pointer transition-colors duration-300 hover:text-green-500" onClick={toggleChat}>
-            <a href="#" className="flex items-center">
+            <div className="flex items-center">
               <Image src="/images/uniai-icon.png" alt="Uniai" width={28} height={28} className="mr-2" />
               Uniai
-            </a>
+            </div>
           </li>
         </ul>
       </nav>
@@ -67,9 +74,13 @@ export default function NotDefterim() {
             <div className="flex flex-col justify-between p-4 w-25">
               <h3 className="font-bold">Not 1</h3>
               <p className="text-sm">Düzenlenme Tarihi: 01/01/2024</p>
-              <button className="mt-auto bg-white text-green-500 p-2 rounded-full border border-gray hover:bg-green-500 hover:text-white hover:shadow-lg transform hover:scale-10 transition duration-200">
-                Not Ekle/Düzenle
-              </button>
+              <button 
+  onClick={() => router.push(`/not-yukle?noteId=1`)} // Not 1 için
+  className="mt-auto bg-white text-green-500 p-2 rounded-full border border-gray hover:bg-green-500 hover:text-white hover:shadow-lg transform hover:scale-105 transition duration-200"
+>
+  Not Ekle/Düzenle
+</button>
+
             </div>
           </div>
           {/* Kutucuk 2 */}
@@ -85,9 +96,13 @@ export default function NotDefterim() {
             <div className="flex flex-col justify-between p-4 w-25">
               <h3 className="font-bold">Not 2</h3>
               <p className="text-sm">Düzenlenme Tarihi: 02/01/2024</p>
-              <button className="mt-auto bg-green-500 text-white shadow-sm hover:shadow-md hover:bg-white hover:text-green-500 p-2 rounded-full hover:border hover:border-gray hover:shadow-lg transform hover:scale-105 transition duration-200">
-                Not Ekle/Düzenle
-              </button>
+              <button 
+  onClick={() => router.push(`/not-yukle?noteId=2`)} // Not 2 için
+  className="mt-auto bg-white text-green-500 p-2 rounded-full border border-gray hover:bg-green-500 hover:text-white hover:shadow-lg transform hover:scale-105 transition duration-200"
+>
+  Not Ekle/Düzenle
+</button>
+
             </div>
           </div>
         </div>
