@@ -73,7 +73,7 @@ export default function Kurslarim() {
             <div key={kursId} className="border rounded-lg shadow-md flex flex-col">
               <div className="relative w-full h-32">
                 <Image
-                  src={`/images/course-img${kursId}.png`} // Örnek kurs resmi
+                  src={`/images/kurs.webp`} // Örnek kurs resmi
                   alt={`Kurs ${kursId}`}
                   layout="fill"
                   className="object-cover"

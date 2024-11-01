@@ -201,7 +201,7 @@ export default function Home() {
         <div className="mb-8 text-center">
           <div className="photo-box relative w-full h-40 overflow-hidden mb-4">
             <Image
-              src="/images/course-banner.jpg"
+              src="/images/welcome.png"
               alt="Kurs Fotoğrafı"
               layout="fill"
               className="object-cover"

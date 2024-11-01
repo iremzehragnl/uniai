@@ -37,7 +37,6 @@ export default function NotYukle() {
   };
 
   const handleAddNotes = () => {
-    // Notları eklemek için gerekli işlem
     setShowChatbot(false); // Chatbotu kapat
   };
 
@@ -117,7 +116,7 @@ export default function NotYukle() {
                 <input 
                   type="file" 
                   className="hidden"
-                  accept=".jpg,.jpeg,.png" // Sadece resim formatlarını buraya ekleyin
+                  accept=".jpg,.jpeg,.png" 
                   onChange={handleFileChange}
                 />
                 <span className="bg-gray-200 text-gray-700 p-2 rounded-md w-32 text-center cursor-pointer hover:bg-gray-300">
