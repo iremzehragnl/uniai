@@ -52,7 +52,7 @@ export default function Home() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const prompt = inputValue || "Bu görseli açıkla, ve not şeklinde çıkart. Başka hiçbir şey yazma.";
+    const prompt = inputValue || "Lütfen bu görseldeki yazıları bir texte çevirin. Ve görsel hakkında bilgi ver.";
     setLoadingData(true);
 
     const genAI = new GoogleGenerativeAI(API_KEY);

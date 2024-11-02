@@ -14,6 +14,7 @@ export default function NotYukle() {
   const [showChatbot, setShowChatbot] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [loadingData, setLoadingData] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Yeni state
 
   const toggleChat = () => {
     setShowChatbot(!showChatbot);
@@ -36,10 +37,8 @@ export default function NotYukle() {
       alert("Lütfen bir resim yükleyin.");
       return;
     }
-
     const imageBase64 = imagePreview.split(",")[1]; // Base64 verisi
-
-    const prompt = "Lütfen bu resimdeki yazıları bir texte çevirin.";
+    const prompt = "Lütfen bu görseldeki yazıları bir texte çevirin. Ve görsel hakkında bilgi ver";
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
@@ -47,14 +46,8 @@ export default function NotYukle() {
     try {
       const contentData = [
         prompt,
-        {
-          inlineData: {
-            data: imageBase64,
-            mimeType: "image/jpeg",
-          },
-        },
+        { inlineData: { data: imageBase64, mimeType: "image/jpeg" } },
       ];
-
       const response = await model.generateContent(contentData);
       setResult(response.response.text()); // Sonucu state'e ata
     } catch (error) {
@@ -70,14 +63,32 @@ export default function NotYukle() {
     setShowChatbot(true); // Chatbotu aç
   };
 
-  const handleChatbotSubmit = (e) => {
+  const handleChatbotSubmit = async (e) => {
     e.preventDefault();
-    const simulatedResponse = `Bu konu için ders notları: ${subject} ile ilgili bilgiler...`;
-    setChatbotResponse(simulatedResponse);
+    const prompt = `Lütfen aşağıdaki konu hakkında bilgi ver: ${subject}`;
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    setIsSubmitting(true); // Butonu kaldırmak için true yap
+    setLoadingData(true);
+    try {
+      const response = await model.generateContent([prompt]);
+      setChatbotResponse(response.response.text()); // Yanıtı state'e ata
+    } catch (error) {
+      console.error("Hata oluştu:", error);
+      alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setLoadingData(false);
+      setIsSubmitting(false); // Yanıt geldikten sonra butonu geri getir
+    }
   };
 
   const handleAddNotes = () => {
+    if (chatbotResponse) {
+      setResult((prev) => (prev ? `${prev}\n${chatbotResponse}` : chatbotResponse)); // Yeni yanıtı ekle
+    }
     setShowChatbot(false); // Chatbotu kapat
+    setChatbotResponse(""); // Cevabı sıfırla
   };
 
   const handleRetry = () => {
@@ -112,8 +123,8 @@ export default function NotYukle() {
           </li>
           <li className="cursor-pointer transition-colors duration-300 hover:text-green-500" onClick={toggleChat}>
             <a href="#" className="flex items-center">
-              <Image src="/images/uniai-icon.png" alt="Uniai" width={28} height={28} className="mr-2" />
-              Uniai
+              <Image src="/images/uniai-icon.png" alt="UNIAI" width={28} height={28} className="mr-2" />
+              UNIAI
             </a>
           </li>
         </ul>
@@ -121,95 +132,84 @@ export default function NotYukle() {
 
       {/* Ana İçerik */}
       <main className="flex-1 p-10">
-        <h1 className="text-2xl font-bold mb-6 ">Not Yükle</h1>
+        <h1 className="text-2xl font-bold mb-6">Not Yükle</h1>
         <div className="flex">
           {/* Sol: Başlık ve Not Kutusu */}
           <div className="flex-1 mr-8">
-            <input
-              type="text"
-              placeholder="Not Başlığı"
-              className="border border-gray-300 rounded-lg p-2 mb-4 w-full text-lg font-semibold"
-            />
-            <textarea
-              placeholder="Notunuzu buraya girin..."
-              className="border border-gray-300 rounded-lg p-4 w-full h-[70vh] resize-none"
-              value={result || ""} // Sonucu textarea'ya yaz
-              onChange={(e) => setResult(e.target.value)} // Kullanıcı değişiklik yapabilsin
-            />
+            <input type="text" placeholder="Not Başlığı" className="border border-gray-300 rounded-lg p-2 mb-4 w-full text-lg font-semibold" />
+            <textarea placeholder="Notunuzu buraya girin..." className="border border-gray-300 rounded-lg p-4 w-full h-[70vh] resize-none overflow-y-auto" value={result || ""} onChange={(e) => setResult(e.target.value)} />
             {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Yüklenen Resim"
-                className="border border-gray-300 rounded-lg mt-4 w-full/2"
-              />
+              <img src={imagePreview} alt="Yüklenen Resim" className="border border-gray-300 rounded-lg mt-4 w-full/2" />
             )}
-            {loadingData && <p>Yükleniyor...</p>}
           </div>
-
           {/* Sağ: Butonlar */}
           <div className="flex flex-col items-start space-y-4 mt-16 ml-4">
             <button className="bg-green-500 text-white p-3 rounded-md w-80 hover:bg-green-600" onClick={handleImageUpload}>
               Resimlerimden Not Çıkar
             </button>
             <button className="bg-green-500 text-white p-3 rounded-md w-80 hover:bg-green-600" onClick={handleUniaiNotHazirla}>
-              Uniai Not Hazırla
+              UNIAI Not Hazırla
             </button>
             <div className="space-y-2">
               <label className="flex items-center mt-16">
-                <input 
-                  type="file" 
-                  className="hidden"
-                  accept=".jpg,.jpeg,.png" 
-                  onChange={handleFileChange}
-                />
-                <span className="bg-gray-200 text-gray-700 p-2 rounded-md w-32 text-center cursor-pointer hover:bg-gray-300">
-                  Dosya Ekle
-                </span>
+                <input type="file" className="hidden" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
+                <span className="bg-gray-200 text-gray-700 p-2 rounded-md w-32 text-center cursor-pointer hover:bg-gray-300">Dosya Ekle</span>
               </label>
-              <button className="bg-gray-200 text-gray-700 p-2 rounded-md w-32 hover:bg-gray-300">
-                Ses Ekle
-              </button>
+              <button className="bg-gray-200 text-gray-700 p-2 rounded-md w-32 hover:bg-gray-300">Ses Ekle</button>
               <div className="flex justify-end mt-16">
-          <button className="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 w-32 mt-16">
-            Kaydet
-          </button>
-        </div>
+                <button className="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 w-32 mt-16">Kaydet</button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Kaydet Butonu */}
-        
-
-        {/* Chatbot Arayüzü */}
+        {/* UNIAI Arayüzü */}
         {showChatbot && (
           <>
             <div className="fixed inset-0 bg-black bg-opacity-50 z-40" /> {/* Bulanık arka plan */}
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h2 className="font-bold mb-2">Chatbot</h2>
-                <form onSubmit={handleChatbotSubmit}>
+                <div className="flex justify-between">
+                  <h2 className="text-lg font-bold">UNIAI</h2>
+                  <button className="text-gray-600" onClick={toggleChat}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 10.586L5.414 4 4 5.414 10.586 12 4 18.586 5.414 20 12 13.414 18.586 20 20 18.586 13.414 12 20 5.414 18.586 4 12 10.586z" />
+                    </svg>
+                  </button>
+                </div>
+                <form onSubmit={handleChatbotSubmit} className="mt-4">
                   <input
                     type="text"
-                    placeholder="Özet çıkarmamı istediğin konu nedir?"
-                    className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                    placeholder="Sorunuz..."
+                    className="border border-gray-300 rounded-lg p-2 mb-4 w-full text-lg"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                   />
-                  <button type="submit" className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full font-bold">
-                    Sor
-                  </button>
+                  {isSubmitting ? (
+                    <p className="text-black flex items-center">Yükleniyor...</p>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="bg-green-500 text-white p-2 rounded hover:bg-green-600 mb-4 w-full"
+                    >
+                      Sor
+                    </button>
+                  )}
                 </form>
+                {loadingData && !isSubmitting && (
+                  <p className="text-black flex items-center">Yükleniyor...</p>
+                )}
                 {chatbotResponse && (
                   <div className="mt-4">
-                    <p className="font-bold">Chatbot Cevabı:</p>
-                    <p>{chatbotResponse}</p>
+                    <div className="h-32 overflow-y-auto border border-gray-300 p-2 rounded">
+                      <p>{chatbotResponse}</p>
+                    </div>
                     <div className="flex justify-between mt-4">
                       <button className="bg-green-500 text-white p-2 rounded hover:bg-green-600" onClick={handleAddNotes}>
                         Evet, notlarıma ekle
                       </button>
                       <button className="bg-red-500 text-white p-2 rounded hover:bg-red-600" onClick={handleRetry}>
-                        Hayır, tekrar not hazırla
+                        Yeniden Sor
                       </button>
                     </div>
                   </div>
@@ -219,14 +219,6 @@ export default function NotYukle() {
           </>
         )}
       </main>
-
-      {/* Chatbot İkonu */}
-      <div
-        className="fixed bottom-8 right-8 bg-red-500 rounded-full p-6 cursor-pointer shadow-lg transition-all duration-300 hover:scale-110"
-        onClick={toggleChat}
-      >
-        <Image src="/images/chatbot-icon.png" alt="Chatbot" width={40} height={40} />
-      </div>
     </div>
   );
 }
