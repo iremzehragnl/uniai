@@ -17,7 +17,7 @@ export default function Home() {
   const [questions, setQuestions] = useState<string[]>([]);
 
   const generateQuestions = async () => {
-    const prompt = "Yazılım ve teknoloji hakkında iki kısa soru oluştur. Soru dışında başka bir şey yazma. Sıralama yapma. Soruların başına sayı ekleme.";
+    const prompt = "Yazılım ve teknoloji hakkında iki kısa soru oluştur. Soru dışında başka bir şey yazma. soruların başında boşluk bırak, hiçbir şey olmasın.";
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
@@ -280,14 +280,14 @@ export default function Home() {
 
       {isChatOpen && (
         <div className="fixed bottom-16 right-4 bg-white border border-gray-300 shadow-lg p-4 rounded-lg w-80 max-h-96 overflow-y-auto transition-all duration-300 transform translate-y-0 opacity-100">
-          <h2 className="font-bold text-lg mb-2 text-center">Sohbet Botu</h2>
+          <h2 className="font-bold text-lg mb-2 text-center"> UniAI</h2>
           <div className="border-b border-gray-300 pb-2 mb-2">
             {questions.length > 0 && (
               <div className="flex flex-col mb-2">
                 {questions.map((question, index) => (
                   <p
                     key={index}
-                    className="text-blue-600 cursor-pointer hover:underline mb-1"
+                    className="text-black-600 cursor-pointer hover:underline "
                     onClick={() => handleQuestionClick(question)}
                   >
                     {question}

@@ -59,6 +59,11 @@ export default function NotDefterim() {
       </nav>
 
       <main className="flex-1 p-8">
+      <input
+          type="text"
+          placeholder="Not ara..."
+          className="border border-gray-300 rounded-lg p-2 mb-4 w-full"
+        />
         <h1 className="text-2xl font-bold mb-6">Not Defterim</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Kutucuk 1 */}

@@ -39,7 +39,7 @@ export default function NotYukle() {
 
     const imageBase64 = imagePreview.split(",")[1]; // Base64 verisi
 
-    const prompt = "Lütfen bu resmi analiz edin ve önemli noktaları belirtin.";
+    const prompt = "Lütfen bu resimdeki yazıları bir texte çevirin.";
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
@@ -121,7 +121,7 @@ export default function NotYukle() {
 
       {/* Ana İçerik */}
       <main className="flex-1 p-10">
-        <h1 className="text-2xl font-bold mb-6 ml-16">Not Yükle</h1>
+        <h1 className="text-2xl font-bold mb-6 ">Not Yükle</h1>
         <div className="flex">
           {/* Sol: Başlık ve Not Kutusu */}
           <div className="flex-1 mr-8">
@@ -140,7 +140,7 @@ export default function NotYukle() {
               <img
                 src={imagePreview}
                 alt="Yüklenen Resim"
-                className="border border-gray-300 rounded-lg mt-4 w-full h-auto"
+                className="border border-gray-300 rounded-lg mt-4 w-full/2"
               />
             )}
             {loadingData && <p>Yükleniyor...</p>}
@@ -169,16 +169,17 @@ export default function NotYukle() {
               <button className="bg-gray-200 text-gray-700 p-2 rounded-md w-32 hover:bg-gray-300">
                 Ses Ekle
               </button>
+              <div className="flex justify-end mt-16">
+          <button className="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 w-32 mt-16">
+            Kaydet
+          </button>
+        </div>
             </div>
           </div>
         </div>
 
         {/* Kaydet Butonu */}
-        <div className="flex justify-end">
-          <button className="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 w-32">
-            Kaydet
-          </button>
-        </div>
+        
 
         {/* Chatbot Arayüzü */}
         {showChatbot && (
