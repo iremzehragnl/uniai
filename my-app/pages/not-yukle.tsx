@@ -1,5 +1,9 @@
 import { useState } from "react";
 import Image from "next/image";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const MODEL_NAME = "gemini-1.5-flash"; // Model adı
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string; // API anahtarı
 
 export default function NotYukle() {
   const [isChatOpen, setChatOpen] = useState(false);
@@ -8,6 +12,8 @@ export default function NotYukle() {
   const [subject, setSubject] = useState("");
   const [chatbotResponse, setChatbotResponse] = useState("");
   const [showChatbot, setShowChatbot] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
 
   const toggleChat = () => {
     setShowChatbot(!showChatbot);
@@ -22,6 +28,40 @@ export default function NotYukle() {
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!imageFile) {
+      alert("Lütfen bir resim yükleyin.");
+      return;
+    }
+
+    const imageBase64 = imagePreview.split(",")[1]; // Base64 verisi
+
+    const prompt = "Lütfen bu resmi analiz edin ve önemli noktaları belirtin.";
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+    setLoadingData(true);
+    try {
+      const contentData = [
+        prompt,
+        {
+          inlineData: {
+            data: imageBase64,
+            mimeType: "image/jpeg",
+          },
+        },
+      ];
+
+      const response = await model.generateContent(contentData);
+      setResult(response.response.text()); // Sonucu state'e ata
+    } catch (error) {
+      console.error("Hata oluştu:", error);
+      alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -93,6 +133,8 @@ export default function NotYukle() {
             <textarea
               placeholder="Notunuzu buraya girin..."
               className="border border-gray-300 rounded-lg p-4 w-full h-[70vh] resize-none"
+              value={result || ""} // Sonucu textarea'ya yaz
+              onChange={(e) => setResult(e.target.value)} // Kullanıcı değişiklik yapabilsin
             />
             {imagePreview && (
               <img
@@ -101,11 +143,12 @@ export default function NotYukle() {
                 className="border border-gray-300 rounded-lg mt-4 w-full h-auto"
               />
             )}
+            {loadingData && <p>Yükleniyor...</p>}
           </div>
 
           {/* Sağ: Butonlar */}
           <div className="flex flex-col items-start space-y-4 mt-16 ml-4">
-            <button className="bg-green-500 text-white p-3 rounded-md w-80 hover:bg-green-600">
+            <button className="bg-green-500 text-white p-3 rounded-md w-80 hover:bg-green-600" onClick={handleImageUpload}>
               Resimlerimden Not Çıkar
             </button>
             <button className="bg-green-500 text-white p-3 rounded-md w-80 hover:bg-green-600" onClick={handleUniaiNotHazirla}>
