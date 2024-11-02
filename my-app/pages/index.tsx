@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// API configuration
 const MODEL_NAME = "gemini-1.5-flash";
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
 
@@ -16,7 +17,7 @@ export default function Home() {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const generateQuestions = async () => {
-    const prompt = "Yazılım ve teknoloji hakkında iki kısa soru oluştur. Başka bir şey yazma";
+    const prompt = "Yazılım ve teknoloji hakkında iki kısa soru oluştur.";
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
@@ -122,19 +123,7 @@ export default function Home() {
       </nav>
 
       <main className="flex-1 p-8">
-        {/* Fotoğraf Kutucuğu */}
-        <div className="mb-8 text-center">
-          <div className="photo-box relative w-full h-40 overflow-hidden mb-4">
-            <Image
-              src="/images/welcome.png"
-              alt="Kurs Fotoğrafı"
-              layout="fill"
-              className="object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Kurslar */}
+        {/* Courses */}
         <div className="grid grid-cols-2 gap-8">
           <div className="border p-4 rounded-lg shadow-md">
             <div className="relative w-full h-40 overflow-hidden">
