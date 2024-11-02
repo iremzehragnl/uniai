@@ -31,6 +31,18 @@ export default function NotYukle() {
       reader.readAsDataURL(file);
     }
   };
+  const handleDownloadNotes = () => {
+    const blob = new Blob([result || ""], { type: "text/plain" }); // Notları içeren bir Blob oluştur
+    const url = URL.createObjectURL(blob); // Blob'dan bir URL oluştur
+    const a = document.createElement("a"); // Yeni bir <a> elementi oluştur
+    a.href = url; // URL'yi <a> elementinin href'ine ata
+    a.download = "notlar.txt"; // İndirilecek dosya adı
+    document.body.appendChild(a); // <a> elementini body'ye ekle
+    a.click(); // <a> elementine tıkla (indirme işlemini başlat)
+    document.body.removeChild(a); // <a> elementini body'den kaldır
+    URL.revokeObjectURL(url); // Belleği temizle
+};
+
 
   const handleImageUpload = async () => {
     if (!imageFile) {
@@ -145,6 +157,7 @@ export default function NotYukle() {
           {/* Sağ: Butonlar */}
           <div className="flex flex-col items-start space-y-4 mt-16 ml-4">
             <button className="bg-green-500 text-white p-3 rounded-md w-80 hover:bg-green-600" onClick={handleImageUpload}>
+              
               Resimlerimden Not Çıkar
             </button>
             <button className="bg-green-500 text-white p-3 rounded-md w-80 hover:bg-green-600" onClick={handleUniaiNotHazirla}>
@@ -162,6 +175,13 @@ export default function NotYukle() {
             </div>
           </div>
         </div>
+        <div className="flex justify-end mt-16">
+  <button className="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 w-32 mt-16" onClick={handleDownloadNotes}>
+    Notları İndir
+  </button>
+  
+</div>
+
 
         {/* UNIAI Arayüzü */}
         {showChatbot && (
