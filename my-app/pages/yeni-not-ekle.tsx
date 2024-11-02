@@ -1,11 +1,17 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Navbar from "@/components/navbar";
+
+const GEMINI_API_ENDPOINT = "YOUR_GEMINI_API_ENDPOINT"; // Gemini API uç noktanız
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
 
 export default function YeniNotEkle() {
   const [isChatOpen, setChatOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [transcribedText, setTranscribedText] = useState<string | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
 
   const toggleChat = () => {
     setChatOpen(!isChatOpen);
@@ -23,11 +29,11 @@ export default function YeniNotEkle() {
       formData.append("file", selectedFile);
 
       try {
-        const response = await fetch("GEMINI_API_ENDPOINT", {
+        const response = await fetch(GEMINI_API_ENDPOINT, {
           method: "POST",
           headers: {
-            // Gerekli ise API anahtarını burada ekleyin
-            "Authorization": "Bearer YOUR_API_KEY",
+            "Authorization": `Bearer ${API_KEY}`,
+            "Accept": "application/json",
           },
           body: formData,
         });
@@ -35,7 +41,8 @@ export default function YeniNotEkle() {
         if (response.ok) {
           const data = await response.json();
           console.log("Dönüştürülen metin:", data.transcribedText);
-          // Burada döndürülen metni işleyebilirsiniz
+          setTranscribedText(data.transcribedText);
+          setShowPopup(true); // Pop-up'ı aç
         } else {
           alert("Dosya yükleme sırasında bir hata oluştu.");
         }
@@ -65,40 +72,30 @@ export default function YeniNotEkle() {
     }
   };
 
+  const handleCopyToClipboard = () => {
+    if (transcribedText) {
+      navigator.clipboard.writeText(transcribedText);
+      alert("Metin kopyalandı!");
+    }
+  };
+
+  const handleDownloadTextFile = () => {
+    if (transcribedText) {
+      const blob = new Blob([transcribedText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'notlar.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+
   return (
     <div className="flex">
-      {/* Sol Navbar */}
-      <nav className="flex flex-col items-start bg-white border-r border-gray-300 h-screen p-4">
-        <div className="mb-8">
-          <Image src="/images/logo.png" alt="Logo" width={120} height={40} />
-        </div>
-        <ul className="space-y-4 text-lg font-normal">
-          <li className="cursor-pointer transition-colors duration-300 hover:text-green-500">
-            <Link href="#" className="flex items-center">
-              <Image src="/images/gozat-icon.png" alt="Göz At" width={20} height={20} className="mr-2" />
-              Göz At
-            </Link>
-          </li>
-          <li className="cursor-pointer transition-colors duration-300 hover:text-green-500">
-            <Link href="/kurslarim" className="flex items-center">
-              <Image src="/images/course-icon.png" alt="Kurslarım" width={20} height={20} className="mr-2" />
-              Kurslarım
-            </Link>
-          </li>
-          <li className="cursor-pointer transition-colors duration-300 hover:text-green-500">
-            <Link href="/not-defterim" className="flex items-center">
-              <Image src="/images/notebook-icon.png" alt="Not Defterim" width={20} height={20} className="mr-2" />
-              Not Defterim
-            </Link>
-          </li>
-          <li className="cursor-pointer transition-colors duration-300 hover:text-green-500" onClick={toggleChat}>
-            <Link href="#" className="flex items-center">
-              <Image src="/images/chat-icon.png" alt="Uniai" width={20} height={20} className="mr-2" />
-              Uniai
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <Navbar />
 
       <main className="flex-1 p-8 flex flex-col items-center justify-center min-h-screen">
         {/* Başlık */}
@@ -142,6 +139,36 @@ export default function YeniNotEkle() {
             </div>
           </div>
         </div>
+
+        {/* Pop-up */}
+        {showPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+              <h2 className="font-bold mb-2">Dönüştürülen Metin</h2>
+              <p className="mb-4">{transcribedText}</p>
+              <div className="flex justify-between">
+                <button 
+                  onClick={handleCopyToClipboard} 
+                  className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+                >
+                  Kopyala
+                </button>
+                <button 
+                  onClick={handleDownloadTextFile} 
+                  className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                >
+                  İndir
+                </button>
+                <button 
+                  onClick={() => setShowPopup(false)} 
+                  className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+                >
+                  Kapat
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Chatbot İkonu */}
@@ -176,5 +203,3 @@ export default function YeniNotEkle() {
     </div>
   );
 }
-
-
