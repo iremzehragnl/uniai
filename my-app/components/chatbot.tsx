@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// API configuration
 const MODEL_NAME = "gemini-1.5-flash";
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
 
@@ -14,9 +13,10 @@ const Chatbot = () => {
   const [questions, setQuestions] = useState<string[]>([]);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  
 
   const generateQuestions = async () => {
-    const prompt = "Yazılım ve teknoloji hakkında iki kısa soru oluştur. soruların önündeki cümleyi, sayıları ve sembolleri yok et. soruların önünde sadece boşluk olsun.";
+    const prompt = "Yazılım ve teknoloji hakkında iki kısa soru oluştur. soruların önündeki cümleyi, sayıları ve sembolleri yok et. soruların önünde sadece boşluk olsun. soruların önüne hiçbir şey koyma";
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
