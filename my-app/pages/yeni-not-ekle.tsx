@@ -2,6 +2,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
+import Chatbot from "@/components/chatbot";
 
 const GEMINI_API_ENDPOINT = "YOUR_GEMINI_API_ENDPOINT"; // Gemini API uç noktanız
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
@@ -12,7 +13,7 @@ export default function YeniNotEkle() {
   const [dragging, setDragging] = useState(false);
   const [transcribedText, setTranscribedText] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
-
+  
   const toggleChat = () => {
     setChatOpen(!isChatOpen);
   };
@@ -183,6 +184,7 @@ export default function YeniNotEkle() {
           height={30}
         />
       </div>
+      
 
       {/* Chatbot Sohbeti */}
       {isChatOpen && (

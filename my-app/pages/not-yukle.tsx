@@ -4,13 +4,13 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Navbar from "@/components/navbar";
 import Chatbot from "@/components/chatbot";
 
-const MODEL_NAME = "gemini-1.5-flash"; // Model adı
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string; // API anahtarı
+const MODEL_NAME = "gemini-1.5-flash"; 
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string; 
 
 export default function NotYukle() {
   const [isChatOpen, setChatOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [subject, setSubject] = useState("");
   const [chatbotResponse, setChatbotResponse] = useState("");
   const [showChatbot, setShowChatbot] = useState(false);
@@ -24,16 +24,16 @@ export default function NotYukle() {
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // Dosya seçimini al
+    const file = event.target.files?.[0]; 
     if (file) {
-      setImageFile(file); // Seçilen dosyayı state'e kaydet
+      setImageFile(file); 
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string); // Dosya yüklendiğinde önizleme ayarla
+        setImagePreview(reader.result as string); 
       };
-      reader.readAsDataURL(file); // Dosyayı oku ve base64 formatında döndür
+      reader.readAsDataURL(file); 
     } else {
-      setImagePreview(null); // Dosya yoksa önizlemeyi sıfırla
+      setImagePreview(null); 
     }
   };
 
@@ -148,8 +148,8 @@ export default function NotYukle() {
                   <Image 
                     src="/images/kaydet.png"
                     alt="Kaydet"
-                    width={15} // İkonun genişliği
-                    height={15} // İkonun yüksekliği
+                    width={15} 
+                    height={15} 
                   />
                  <span>Kaydet</span>
                 </button>
@@ -167,34 +167,35 @@ export default function NotYukle() {
         
 
         {showFileUploadPopup && (
-          <>
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-40" /> {/* Bulanık arka plan */}
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <div className="flex justify-between">
-                <h2 className="text-lg font-bold">Resim Yükle</h2>
-                <button className="text-gray-600" onClick={() => setShowFileUploadPopup(false)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 10.586L5.414 4 4 5.414 10.586 12 4 18.586 5.414 20 12 13.414 18.586 20 20 18.586 13.414 12 20 5.414 18.586 4 12 10.586z" />
-                    </svg>
-                  </button>
-                  </div>
-                <p className="text-sm text-gray-500 font-light">Lütfen bir resim yükleyin:</p>
-                <input type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} className="mt-3 border p-2 rounded" />
-                {loadingData && (
-        <div className="flex mb-4 mr-8">
-          <p className="text-gray-700">Yükleniyor...</p>
+  <>
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-40" /> {/* Bulanık arka plan */}
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+        <div className="flex justify-between">
+          <h2 className="text-lg font-bold">Resim Yükle</h2>
+          <button className="text-gray-600" onClick={() => setShowFileUploadPopup(false)}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 10.586L5.414 4 4 5.414 10.586 12 4 18.586 5.414 20 12 13.414 18.586 20 20 18.586 13.414 12 20 5.414 18.586 4 12 10.586z" />
+            </svg>
+          </button>
         </div>
-      )}
-                <div className="flex justify-end mt-4">
-                  <button className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full" onClick={handleImageUpload}>
-                    Yükle
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+        <p className="text-sm text-gray-500 font-light">Lütfen bir resim yükleyin:</p>
+        <input type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} className="mt-3 border p-2 rounded" />
+       
+        <div className="flex justify-end mt-4">
+          <button 
+            className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full" 
+            onClick={handleImageUpload}
+            disabled={loadingData} // Disable button while loading
+          >
+            {loadingData ? "Yükleniyor..." : "Yükle"} {/* Change button text based on loading state */}
+          </button>
+        </div>
+      </div>
+    </div>
+  </>
+)}
+
 
         {showChatbot && (
           <>
