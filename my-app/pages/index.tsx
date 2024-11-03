@@ -5,7 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Navbar from "@/components/navbar";
 import Chatbot from "@/components/chatbot";
 
-// API configuration
+
 const MODEL_NAME = "gemini-1.5-flash";
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
 

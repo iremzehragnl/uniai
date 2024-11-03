@@ -73,11 +73,11 @@ export default function NotYukle() {
       <main className="flex-1 p-10 max-w-lg mx-auto">
       <h1 className="text-3xl font-bold mb-1 text-center flex items-center justify-center">
   <Image
-    src="/images/uniai-icon.png" // İkonun yolunu güncelledim
+    src="/images/uniai-icon.png"
     alt="UniAI Icon"
-    width={80} // İkon boyutunu büyüttüm
-    height={80} // İkon boyutunu büyüttüm
-    className="mr" // İkonun sağındaki boşluğu artırdım
+    width={80} 
+    height={80} 
+    className="mr" 
   />
   Ders Notlarınızı Dijitalleştirin
 </h1>
@@ -94,7 +94,7 @@ export default function NotYukle() {
         <div className="flex flex-col items-center">
           <label className="flex items-center border p-2 rounded w-full cursor-pointer">
             <Image
-              src="/images/attachment-icon.png" // İkonun yolunu güncelledim
+              src="/images/attachment-icon.png" 
               alt="Dosya Seç"
               width={20}
               height={20}
@@ -145,7 +145,7 @@ export default function NotYukle() {
         >
           Notları İndir
           <Image
-            src="/images/indir.png" // İkonun yolunu güncelledim
+            src="/images/indir.png" 
             alt="İndir"
             width={20}
             height={20}

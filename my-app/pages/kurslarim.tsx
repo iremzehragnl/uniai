@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import Link from "next/link"; // Link bileşenini içe aktarın
+import Link from "next/link"; 
 import Navbar from "@/components/navbar";
 import Chatbot from "@/components/chatbot";
 
@@ -36,7 +36,7 @@ export default function Kurslarim() {
             <div key={kursId} className="border rounded-lg shadow-md flex flex-col">
               <div className="relative w-full h-32">
                 <Image
-                  src={`/images/kurs.webp`} // Örnek kurs resmi
+                  src={`/images/kurs.webp`} 
                   alt={`Kurs ${kursId}`}
                   layout="fill"
                   className="object-cover"

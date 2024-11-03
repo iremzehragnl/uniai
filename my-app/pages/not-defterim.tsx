@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/router"; // Yönlendirme için useRouter
+import { useRouter } from "next/router"; 
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import Chatbot from "@/components/chatbot";
 
 export default function NotDefterim() {
-  const router = useRouter(); // useRouter ile yönlendirme
+  const router = useRouter(); 
   const [isChatOpen, setChatOpen] = useState(false);
   
   const toggleChat = () => {
@@ -14,7 +14,7 @@ export default function NotDefterim() {
   };
 
   const handleNewNote = () => {
-    router.push('/yeni-not-ekle'); // Yeni not sayfasına yönlendirme
+    router.push('/yeni-not-ekle'); 
   };
 
   return (
@@ -33,7 +33,7 @@ export default function NotDefterim() {
           <div className="border rounded-lg shadow-md flex w-full h-64">
             <div className="relative w-1/3 h-full">
               <Image
-                src="/images/note-img.png" // Örnek resim
+                src="/images/note-img.png" 
                 alt="Not 1"
                 layout="fill"
                 className="object-cover"
@@ -55,7 +55,7 @@ export default function NotDefterim() {
           <div className="border rounded-lg shadow-md flex w-full h-64">
             <div className="relative w-1/3 h-full">
               <Image
-                src="/images/note-img.png" // Örnek resim
+                src="/images/note-img.png" 
                 alt="Not 2"
                 layout="fill"
                 className="object-cover"
@@ -85,9 +85,9 @@ export default function NotDefterim() {
             <Image 
     src="/images/uniai-icon.png"
     alt="Yeni Not Ekle"
-    width={20} // İkonun genişliği....
-    height={20} // İkonun yüksekliği
-    className="mr-2" // İkon ile metin arasında boşluk oluşturmak için
+    width={20} 
+    height={20} 
+    className="mr-2" 
   />
             Yeni Not Ekle
           </button>
