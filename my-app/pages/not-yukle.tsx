@@ -186,7 +186,7 @@ export default function NotYukle() {
           <button 
             className="bg-green-500 text-white p-2 rounded hover:bg-green-600 w-full" 
             onClick={handleImageUpload}
-            disabled={loadingData} // Disable button while loading
+            disabled={loadingData} 
           >
             {loadingData ? "Yükleniyor..." : "Yükle"} {/* Change button text based on loading state */}
           </button>
